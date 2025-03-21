@@ -1,20 +1,18 @@
 // src/components/MapView.tsx
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
+import { LatLngExpression, Icon } from "leaflet";
 import { OfficeRecord } from "../types";
 import "leaflet/dist/leaflet.css";
 
-// Fix for missing marker icons in Leaflet
-import L from "leaflet";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
+// Custom blue marker icon (smaller size)
+const customIcon = new Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+  iconSize: [10, 20],
+  iconAnchor: [7, 24],
+  popupAnchor: [0, -24],
+  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+  shadowSize: [24, 24],
+  shadowAnchor: [7, 24],
 });
 
 interface Props {
@@ -22,37 +20,75 @@ interface Props {
 }
 
 const MapView: React.FC<Props> = ({ locations }) => {
-  const center: LatLngExpression = [39.5, -98.35]; // Center of US
+  const center: LatLngExpression = [39.5, -98.35];
 
   console.log("🗺️ Rendering", locations.length, "pins");
 
   return (
-    <MapContainer
-      key={locations.length}
-      center={center}
-      zoom={4}
-      style={{ height: "100vh", width: "100vw" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
-      />
+    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "20px",
+          left: "50px",
+          backgroundColor: "#EE2722",
+          color: "white",
+          padding: "12px 20px",
+          fontSize: "20px",
+          fontWeight: "normal",
+          display: "inline-block",
+          zIndex: 1000,
+        }}
+      >
+        Find the Nearest Social Security Office - <strong>Brought to you by AARP</strong>
+      </div>
+      <MapContainer
+        key={locations.length}
+        center={center}
+        zoom={4}
+        style={{ height: "calc(100vh - 60px)", width: "100vw" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+        />
 
-      {locations.map((loc, idx) => (
-        <Marker key={idx} position={[loc.coords!.lat, loc.coords!.lng]}>
-          <Popup>
-            <strong>{loc["OFFICE NAME"]}</strong>
-            <br />
-            {loc["ADDRESS LINE 1"]}
-            {loc["ADDRESS LINE 3"] && <><br />{loc["ADDRESS LINE 3"]}</>}
-            <br />
-            {loc.CITY}, {loc.STATE} {loc["ZIP CODE"]}
-            <br />
-            📞 {loc.PHONE}
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {locations.map((loc, idx) => (
+          <Marker key={idx} position={[loc.coords!.lat, loc.coords!.lng]} icon={customIcon}>
+            <Popup>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ fontWeight: "bold", fontSize: "14px", textAlign: "center", borderBottom: "1px solid #ccc", paddingBottom: "4px" }}>
+                  {loc["OFFICE NAME"]}
+                </div>
+                <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    {loc["ADDRESS LINE 1"]}
+                    {loc["ADDRESS LINE 3"] && <><br />{loc["ADDRESS LINE 3"]}</>}
+                    <br />
+                    {loc.CITY}, {loc.STATE} {loc["ZIP CODE"]}
+                    <br />
+                    📞 {loc.PHONE}
+                  </div>
+                  <div>
+                    <strong>Hours:</strong>
+                    <br />
+                    Mon: {loc["MONDAY OPEN TIME"] || "Closed"} - {loc["MONDAY CLOSE TIME"] || "Closed"}
+                    <br />
+                    Tue: {loc["TUESDAY OPEN TIME"] || "Closed"} - {loc["TUESDAY CLOSE TIME"] || "Closed"}
+                    <br />
+                    Wed: {loc["WEDNESDAY OPEN TIME"] || "Closed"} - {loc["WEDNESDAY CLOSE TIME"] || "Closed"}
+                    <br />
+                    Thu: {loc["THURSDAY OPEN TIME"] || "Closed"} - {loc["THURSDAY CLOSE TIME"] || "Closed"}
+                    <br />
+                    Fri: {loc["FRIDAY OPEN TIME"] || "Closed"} - {loc["FRIDAY CLOSE TIME"] || "Closed"}
+                  </div>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 };
 

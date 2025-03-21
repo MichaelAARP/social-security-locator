@@ -39,8 +39,8 @@ const MapView: React.FC<Props> = ({ locations }) => {
           lineHeight: 1.4,
         }}
       >
-        <div style={{ fontSize: "40px", fontWeight: "bold" }}>Social Security Office Nationwide</div>
-        <div style={{ fontSize: "30px", color: "#EE2722" }}>
+        <div style={{ fontSize: "30px", fontWeight: "bold" }}>Social Security Office Nationwide</div>
+        <div style={{ fontSize: "20px", color: "#EE2722" }}>
           Brought to you by the AgeTech Collaborative from AARP
         </div>
       </div>

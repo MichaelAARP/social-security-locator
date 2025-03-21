@@ -30,17 +30,19 @@ const MapView: React.FC<Props> = ({ locations }) => {
         style={{
           position: "absolute",
           top: "20px",
-          left: "20px",
-          backgroundColor: "#EE2722",
-          color: "white",
+          left: "60px",
+          backgroundColor: "rgba(249, 249, 249, 0.85)",
+          color: "black",
           padding: "12px 20px",
-          fontSize: "20px",
-          fontWeight: "normal",
           display: "inline-block",
           zIndex: 1000,
+          lineHeight: 1.4,
         }}
       >
-        Find the Nearest Social Security Office - <strong>Brought to you by AARP</strong>
+        <div style={{ fontSize: "50px", fontWeight: "bold" }}>Social Security Office Nationwide</div>
+        <div style={{ fontSize: "36px", color: "#EE2722" }}>
+          Brought to you by the AgeTech Collaborative from AARP
+        </div>
       </div>
 
       <div style={{ position: "absolute", inset: 0 }}>

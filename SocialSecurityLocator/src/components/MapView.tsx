@@ -2,7 +2,11 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { LatLngExpression, Icon } from "leaflet";
 import { OfficeRecord } from "../types";
+import { useEffect } from "react";
 import "leaflet/dist/leaflet.css";
+
+
+
 
 // Marker icons
 const greenIcon = new Icon({
@@ -42,7 +46,21 @@ interface Props {
   locations: OfficeRecord[];
 }
 
+
 const MapView: React.FC<Props> = ({ locations }) => {
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+          .leaflet-control-attribution {
+            display: none !important;
+          }
+        `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
   const center: LatLngExpression = [39.5, -98.35];
 
   console.log("🗺️ Rendering", locations.length, "pins");
@@ -68,7 +86,7 @@ const MapView: React.FC<Props> = ({ locations }) => {
           style={{
             position: "absolute",
             bottom: "20px",
-            left: "20px",
+            left: "80px",
             backgroundColor: "rgba(249, 249, 249, 0.6)",
             color: "black",
             padding: "10px 14px",
@@ -80,22 +98,46 @@ const MapView: React.FC<Props> = ({ locations }) => {
           <strong>Legend:</strong>
           <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0 0" }}>
             <li>
-              <span style={{ color: "#2ECC40", fontWeight: "bold" }}>●</span>{" "}
+              <span
+                style={{
+                  color: "#2ECC40",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                }}
+              >
+                ●
+              </span>{" "}
               Open
             </li>
             {locations.some(
               (loc) => loc["CLOSING"]?.toUpperCase() === "TRUE"
             ) && (
               <li>
-                <span style={{ color: "#FFD700", fontWeight: "bold" }}>●</span>{" "}
-                Closing Soon
+                <span
+                  style={{
+                    color: "#FFD700",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
+                >
+                  ●
+                </span>{" "}
+                Scheduled for Closure
               </li>
             )}
             {locations.some(
               (loc) => loc["CLOSED"]?.toUpperCase() === "TRUE"
             ) && (
               <li>
-                <span style={{ color: "#EE2722", fontWeight: "bold" }}>●</span>{" "}
+                <span
+                  style={{
+                    color: "#EE2722",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
+                >
+                  ●
+                </span>{" "}
                 Closed
               </li>
             )}
@@ -118,10 +160,10 @@ const MapView: React.FC<Props> = ({ locations }) => {
         }}
       >
         <div style={{ fontSize: "22px", fontWeight: "bold" }}>
-          Social Security Office Nationwide
+          U.S. Social Security Offices
         </div>
         <div style={{ fontSize: "16px", color: "#EE2722" }}>
-          Brought to you by the AgeTech Collaborative&trade; from AARP
+          Created by the AgeTech Collaborative&trade; from AARP
         </div>
       </div>
 
@@ -190,21 +232,29 @@ const MapView: React.FC<Props> = ({ locations }) => {
                     </div>
                     <div>
                       <strong>Hours:</strong>
-                      <br />
-                      Mon: {loc["MONDAY OPEN TIME"] || "Closed"} -{" "}
-                      {loc["MONDAY CLOSE TIME"] || "Closed"}
-                      <br />
-                      Tue: {loc["TUESDAY OPEN TIME"] || "Closed"} -{" "}
-                      {loc["TUESDAY CLOSE TIME"] || "Closed"}
-                      <br />
-                      Wed: {loc["WEDNESDAY OPEN TIME"] || "Closed"} -{" "}
-                      {loc["WEDNESDAY CLOSE TIME"] || "Closed"}
-                      <br />
-                      Thu: {loc["THURSDAY OPEN TIME"] || "Closed"} -{" "}
-                      {loc["THURSDAY CLOSE TIME"] || "Closed"}
-                      <br />
-                      Fri: {loc["FRIDAY OPEN TIME"] || "Closed"} -{" "}
-                      {loc["FRIDAY CLOSE TIME"] || "Closed"}
+                      <div
+                        style={{
+                          fontFamily: "monospace",
+                          whiteSpace: "pre",
+                          fontSize: "13px",
+                          marginTop: "4px",
+                        }}
+                      >
+                        Mon: {loc["MONDAY OPEN TIME"] || "Closed"} -{" "}
+                        {loc["MONDAY CLOSE TIME"] || "Closed"}
+                        {"\n"}
+                        Tue: {loc["TUESDAY OPEN TIME"] || "Closed"} -{" "}
+                        {loc["TUESDAY CLOSE TIME"] || "Closed"}
+                        {"\n"}
+                        Wed: {loc["WEDNESDAY OPEN TIME"] || "Closed"} -{" "}
+                        {loc["WEDNESDAY CLOSE TIME"] || "Closed"}
+                        {"\n"}
+                        Thu: {loc["THURSDAY OPEN TIME"] || "Closed"} -{" "}
+                        {loc["THURSDAY CLOSE TIME"] || "Closed"}
+                        {"\n"}
+                        Fri: {loc["FRIDAY OPEN TIME"] || "Closed"} -{" "}
+                        {loc["FRIDAY CLOSE TIME"] || "Closed"}
+                      </div>
                     </div>
                   </div>
                 </div>

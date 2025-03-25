@@ -121,7 +121,7 @@ const MapView: React.FC<Props> = ({ locations }) => {
           Social Security Office Nationwide
         </div>
         <div style={{ fontSize: "16px", color: "#EE2722" }}>
-          Brought to you by the AgeTech Collaborative from AARP
+          Brought to you by the AgeTech Collaborative&trade; from AARP
         </div>
       </div>
 

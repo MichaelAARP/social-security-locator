@@ -4,15 +4,38 @@ import { LatLngExpression, Icon } from "leaflet";
 import { OfficeRecord } from "../types";
 import "leaflet/dist/leaflet.css";
 
-// Custom blue marker icon (smaller size)
-const customIcon = new Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-  iconSize: [15, 24],
-  iconAnchor: [7, 24],
-  popupAnchor: [0, -24],
+// Marker icons
+const greenIcon = new Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+  iconSize: [18, 30],
+  iconAnchor: [9, 30],
+  popupAnchor: [1, -30],
   shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
-  shadowSize: [24, 24],
-  shadowAnchor: [7, 24],
+  shadowSize: [30, 30],
+  shadowAnchor: [9, 30],
+});
+
+const yellowIcon = new Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
+  iconSize: [18, 30],
+  iconAnchor: [9, 30],
+  popupAnchor: [1, -30],
+  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+  shadowSize: [30, 30],
+  shadowAnchor: [9, 30],
+});
+
+const redIcon = new Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+  iconSize: [18, 30],
+  iconAnchor: [9, 30],
+  popupAnchor: [1, -30],
+  shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
+  shadowSize: [30, 30],
+  shadowAnchor: [9, 30],
 });
 
 interface Props {
@@ -24,14 +47,69 @@ const MapView: React.FC<Props> = ({ locations }) => {
 
   console.log("🗺️ Rendering", locations.length, "pins");
 
+  const getIcon = (record: OfficeRecord) => {
+    if (record["CLOSED"]?.toUpperCase() === "TRUE") return redIcon;
+    if (record["CLOSING"]?.toUpperCase() === "TRUE") return yellowIcon;
+    return greenIcon;
+  };
+
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+    <div
+      style={{
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      {(locations.some((loc) => loc["CLOSED"]?.toUpperCase() === "TRUE") ||
+        locations.some((loc) => loc["CLOSING"]?.toUpperCase() === "TRUE")) && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "20px",
+            left: "20px",
+            backgroundColor: "rgba(249, 249, 249, 0.6)",
+            color: "black",
+            padding: "10px 14px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            zIndex: 1000,
+          }}
+        >
+          <strong>Legend:</strong>
+          <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0 0" }}>
+            <li>
+              <span style={{ color: "#2ECC40", fontWeight: "bold" }}>●</span>{" "}
+              Open
+            </li>
+            {locations.some(
+              (loc) => loc["CLOSING"]?.toUpperCase() === "TRUE"
+            ) && (
+              <li>
+                <span style={{ color: "#FFD700", fontWeight: "bold" }}>●</span>{" "}
+                Closing Soon
+              </li>
+            )}
+            {locations.some(
+              (loc) => loc["CLOSED"]?.toUpperCase() === "TRUE"
+            ) && (
+              <li>
+                <span style={{ color: "#EE2722", fontWeight: "bold" }}>●</span>{" "}
+                Closed
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
       <div
         style={{
           position: "absolute",
           top: "20px",
-          left: "60px",
-          backgroundColor: "rgba(249, 249, 249, 0.85)",
+          left: "80px",
+          backgroundColor: "rgba(249, 249, 249, 0.6)",
+          borderRadius: "8px",
           color: "black",
           padding: "12px 20px",
           display: "inline-block",
@@ -39,9 +117,11 @@ const MapView: React.FC<Props> = ({ locations }) => {
           lineHeight: 1.4,
         }}
       >
-        <div style={{ fontSize: "30px", fontWeight: "bold" }}>Social Security Offices Nationwide</div>
-        <div style={{ fontSize: "20px", color: "#EE2722" }}>
-          Brought to you by the AgeTech Collaborative&trade; from AARP
+        <div style={{ fontSize: "22px", fontWeight: "bold" }}>
+          Social Security Office Nationwide
+        </div>
+        <div style={{ fontSize: "16px", color: "#EE2722" }}>
+          Brought to you by the AgeTech Collaborative from AARP
         </div>
       </div>
 
@@ -58,16 +138,51 @@ const MapView: React.FC<Props> = ({ locations }) => {
           />
 
           {locations.map((loc, idx) => (
-            <Marker key={idx} position={[loc.coords!.lat, loc.coords!.lng]} icon={customIcon}>
+            <Marker
+              key={idx}
+              position={[loc.coords!.lat, loc.coords!.lng]}
+              icon={getIcon(loc)}
+            >
               <Popup>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ fontWeight: "bold", fontSize: "14px", textAlign: "center", borderBottom: "1px solid #ccc", paddingBottom: "4px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      textAlign: "center",
+                      borderBottom: "1px solid #ccc",
+                      paddingBottom: "4px",
+                    }}
+                  >
                     {loc["OFFICE NAME"]}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
+                    >
                       {loc["ADDRESS LINE 1"]}
-                      {loc["ADDRESS LINE 3"] && <><br />{loc["ADDRESS LINE 3"]}</>}
+                      {loc["ADDRESS LINE 3"] && (
+                        <>
+                          <br />
+                          {loc["ADDRESS LINE 3"]}
+                        </>
+                      )}
                       <br />
                       {loc.CITY}, {loc.STATE} {loc["ZIP CODE"]}
                       <br />
@@ -76,15 +191,20 @@ const MapView: React.FC<Props> = ({ locations }) => {
                     <div>
                       <strong>Hours:</strong>
                       <br />
-                      Mon: {loc["MONDAY OPEN TIME"] || "Closed"} - {loc["MONDAY CLOSE TIME"] || "Closed"}
+                      Mon: {loc["MONDAY OPEN TIME"] || "Closed"} -{" "}
+                      {loc["MONDAY CLOSE TIME"] || "Closed"}
                       <br />
-                      Tue: {loc["TUESDAY OPEN TIME"] || "Closed"} - {loc["TUESDAY CLOSE TIME"] || "Closed"}
+                      Tue: {loc["TUESDAY OPEN TIME"] || "Closed"} -{" "}
+                      {loc["TUESDAY CLOSE TIME"] || "Closed"}
                       <br />
-                      Wed: {loc["WEDNESDAY OPEN TIME"] || "Closed"} - {loc["WEDNESDAY CLOSE TIME"] || "Closed"}
+                      Wed: {loc["WEDNESDAY OPEN TIME"] || "Closed"} -{" "}
+                      {loc["WEDNESDAY CLOSE TIME"] || "Closed"}
                       <br />
-                      Thu: {loc["THURSDAY OPEN TIME"] || "Closed"} - {loc["THURSDAY CLOSE TIME"] || "Closed"}
+                      Thu: {loc["THURSDAY OPEN TIME"] || "Closed"} -{" "}
+                      {loc["THURSDAY CLOSE TIME"] || "Closed"}
                       <br />
-                      Fri: {loc["FRIDAY OPEN TIME"] || "Closed"} - {loc["FRIDAY CLOSE TIME"] || "Closed"}
+                      Fri: {loc["FRIDAY OPEN TIME"] || "Closed"} -{" "}
+                      {loc["FRIDAY CLOSE TIME"] || "Closed"}
                     </div>
                   </div>
                 </div>

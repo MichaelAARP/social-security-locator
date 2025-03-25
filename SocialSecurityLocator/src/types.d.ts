@@ -10,7 +10,7 @@ export interface OfficeRecord {
     STATE: string;
     "ZIP CODE": string;
     PHONE: string;
-    FAX?: string;
+    FAX: string;
     "MONDAY OPEN TIME"?: string;
     "MONDAY CLOSE TIME"?: string;
     "TUESDAY OPEN TIME"?: string;
@@ -23,6 +23,8 @@ export interface OfficeRecord {
     "FRIDAY CLOSE TIME"?: string;
     Latitude: string;
     Longitude: string;
+    CLOSED?: string;
+    CLOSING?: string;
     coords?: {
       lat: number;
       lng: number;
